@@ -7,8 +7,7 @@ library(tidyverse)
 library(lamW)
 library(LambertW)
 library(frair)
- 
-# AHHHHHHHH WHY AREN'T YOU WORKING
+
 
 # Effluent exclusion experiment ---------------------------------
 
