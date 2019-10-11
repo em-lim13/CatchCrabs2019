@@ -143,7 +143,7 @@ par(mfrow = c(1,1))
 plot(resid(cara) ~ factor(oysters$tank))
 
 # Green functional response ---------------------------------
-green <- read.csv("functional_response_green.csv")
+green <- filter(oysters, species == "green")
 str(green)
 
 # Test for type II
@@ -210,9 +210,8 @@ summary(green_asymp)
 
 
 # Red functional response ---------------------------------
-red <- read.csv("functional_response_red.csv")
+red <- filter(oysters, species == "red")
 str(red)
-
 
 # Test for type II or III
 frair_test(eaten ~ density, data = red) 
