@@ -1,0 +1,11 @@
+﻿tank_size,treatment,time_to_fill,volume,flow_rate_ml_s
+small,effluent,9.57,80,8.359456635
+small,effluent,7.93,80,10.08827238
+small,effluent,8.49,80,9.422850412
+small,effluent,7.66,80,10.44386423
+small,control,8.03,80,9.9626401
+small,control,7.52,80,10.63829787
+small,control,10.02,80,7.984031936
+small,control,10.65,80,7.511737089
+large,effluent,5.19,80,15.41425819
+large,control,4.35,80,18.3908046
