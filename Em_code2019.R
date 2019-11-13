@@ -97,14 +97,13 @@ sd(flow$flow_rate_ml_s[flow$tank_size=="large"])
 
 # Functional response experiment ---------------------------------
 oysters <- read.csv("functional_response.csv") #data file with green and red crab data for functional response
-oysters2 <- read.csv("functional_response_2019.csv")
-oysters <- add_column(oysters, year = 2018)
+oysters2 <- read.csv("functional_response_2019.csv") #data file with 2019 data
+oysters <- add_column(oysters, year = 2018) #add year column to 2018 data
+oysters <- bind_rows(oysters, oysters2) #bind the two data frames
+oysters$species <- as.factor(oysters$species) #fix variables
+oysters$time <- as.factor(oysters$time) #fix variable
+oysters$year <- as.factor(oysters$year)
 
-str(oysters)
-str(oysters2)
-oysters <- bind_rows(oysters, oysters2)
-
-str(oysters)
 
 # Take a quick look at the data
 ggplot(data = oysters) + geom_jitter(aes(x = density, y = eaten, colour = species)) +
@@ -170,6 +169,26 @@ plot(resid(cara) ~ factor(oysters$tank))
 # Green functional response ---------------------------------
 green <- filter(oysters, species == "green")
 str(green)
+
+# Make sure 2018 and 2019 are the same
+#cheliped aren't signif diff
+years <- lm(cheliped ~ year, data = green)
+anova(years)
+summary(years)
+ggplot(green) + geom_boxplot(aes(x = year, y = cheliped))
+
+# but 2019 crabs were bigger
+years2 <- lm(carapace ~ year, data = green)
+anova(years2)
+summary(years2)
+ggplot(green) + geom_boxplot(aes(x = year, y = carapace))
+
+#cheli x cara graph
+ggplot(green) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
+  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
+
+year3 <- lm(cheliped ~ carapace*year, data = green)
+summary(year3)
 
 # Test for type II
 frair_test(eaten ~ density, data = green)
