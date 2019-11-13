@@ -97,6 +97,13 @@ sd(flow$flow_rate_ml_s[flow$tank_size=="large"])
 
 # Functional response experiment ---------------------------------
 oysters <- read.csv("functional_response.csv") #data file with green and red crab data for functional response
+oysters2 <- read.csv("functional_response_2019.csv")
+oysters <- add_column(oysters, year = 2018)
+
+str(oysters)
+str(oysters2)
+oysters <- bind_rows(oysters, oysters2)
+
 str(oysters)
 
 # Take a quick look at the data
