@@ -173,7 +173,6 @@ str(green)
 # Make sure 2018 and 2019 are the same
 #cheliped aren't signif diff
 years <- lm(cheliped ~ year, data = green)
-anova(years)
 summary(years)
 ggplot(green) + geom_boxplot(aes(x = year, y = cheliped))
 
@@ -189,6 +188,11 @@ ggplot(green) + geom_point(aes(x = carapace, y = cheliped, colour = year)) +
 
 year3 <- lm(cheliped ~ carapace*year, data = green)
 summary(year3)
+
+# does year affect eaten?
+ggplot(green) + geom_jitter(aes(x = density, y = eaten, colour = year))
+year4 <- lm(proportion_eaten ~ density + carapace*year, data = green)
+summary(year4)
 
 # Test for type II
 frair_test(eaten ~ density, data = green)
