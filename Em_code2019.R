@@ -190,8 +190,8 @@ year3 <- lm(cheliped ~ carapace*year, data = green)
 summary(year3)
 
 # does year affect eaten?
-ggplot(green) + geom_jitter(aes(x = density, y = eaten, colour = year))
-year4 <- lm(proportion_eaten ~ density + carapace*year, data = green)
+ggplot(green) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
+year4 <- lm(proportion_eaten ~ density + cheliped*year, data = green)
 summary(year4)
 
 # Test for type II
