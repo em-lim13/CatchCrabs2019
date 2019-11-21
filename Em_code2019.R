@@ -182,10 +182,6 @@ anova(years2)
 summary(years2)
 ggplot(green) + geom_boxplot(aes(x = year, y = carapace))
 
-#cheli x cara graph
-ggplot(green) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
-  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
-
 year3 <- lm(cheliped ~ carapace*year, data = green)
 summary(year3)
 
@@ -193,6 +189,11 @@ summary(year3)
 ggplot(green) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
 year4 <- lm(proportion_eaten ~ density + cheliped*year, data = green)
 summary(year4)
+
+#cheli x cara graph
+ggplot(green) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
+  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
+
 
 # Test for type II
 frair_test(eaten ~ density, data = green)
@@ -235,8 +236,7 @@ AIC(outI_g$fit,outII_g$fit)
 
 ####  OLD BOOTSTRAP
 #set.seed(98765)
-#outII_g_boot <- frair_boot(outII_g, start = NULL, strata=NULL, nboot=2000,
-                           para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
+#outII_g_boot <- frair_boot(outII_g, start = NULL, strata=NULL, nboot=2000, para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
 
 
 # NEW bootstrap
@@ -244,11 +244,10 @@ set.seed(309331)
 outII_g_boot <- frair_boot(outII_g, start = NULL, strata=green[,6], nboot=2000,
                            para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
 
-outII_emd_g_boot <- frair_boot(emdII_g, start = NULL, strata=green[,6], nboot=2000,
-                               para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
+#outII_emd_g_boot <- frair_boot(emdII_g, start = NULL, strata=green[,6], nboot=2000, para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
 
 outII_g_boot
-outII_emd_g_boot
+#outII_emd_g_boot
 
 # Illustrate bootlines
 plot(outII_g_boot, xlim=c(0,70), ylim = c(0, 40), type='n', main='All bootstrapped lines')
@@ -272,6 +271,32 @@ summary(green_asymp)
 # Red functional response ---------------------------------
 red <- filter(oysters, species == "red")
 str(red)
+
+# Make sure 2018 and 2019 are the same
+#cheliped aren't signif diff
+years_r <- lm(cheliped ~ year, data = red)
+summary(years_r)
+ggplot(red) + geom_boxplot(aes(x = year, y = cheliped))
+
+# but 2019 crabs were bigger
+years2_r <- lm(carapace ~ year, data = red)
+anova(years2_r)
+summary(years2_r)
+ggplot(red) + geom_boxplot(aes(x = year, y = carapace))
+
+year3_r <- lm(cheliped ~ carapace*year, data = red)
+summary(year3_r)
+
+# does year affect eaten?
+ggplot(green) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
+year4 <- lm(proportion_eaten ~ density + cheliped*year, data = green)
+summary(year4)
+
+#cheli x cara graph
+ggplot(red) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
+  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
+
+
 
 # Test for type II or III
 frair_test(eaten ~ density, data = red) 
@@ -330,6 +355,10 @@ set.seed(604250)
 outIII_r_boot <- frair_boot(outIII_r, start = NULL, strata=red[,6], nboot=2000,
                             para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
 
+
+# is the asymptote ok
+confint(outIII_r_boot)
+
 # Illustrate bootlines
 plot(outIII_r_boot, xlim=c(0,70), ylim = c(0, 40), type='n', main='All bootstrapped lines')
 lines(outIII_r_boot, all_lines=TRUE)
@@ -372,7 +401,6 @@ points(outII_g_boot, pch=20,  col=hsv(2.5/6,0.8, 0.5, alpha= 1), cex = 1.4)
 legend(x = "topleft", legend = c("Green Crabs", "Red Rock Crabs"), 
        col = c(hsv(2.5/6,0.9, 0.5, alpha= 1), c(hsv(6/6,0.9, 0.5))), 
        lty = c(2, 1), cex = 1.3, pch = c(20, 17))
-
 
 # Comparing the distributions of the asymptotes of CP to CM ---------------
 green.densities <- c(64)
