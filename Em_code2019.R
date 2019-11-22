@@ -247,6 +247,7 @@ outII_g_boot <- frair_boot(outII_g, start = NULL, strata=green[,6], nboot=2000,
 #outII_emd_g_boot <- frair_boot(emdII_g, start = NULL, strata=green[,6], nboot=2000, para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
 
 outII_g_boot
+confint(outII_g_boot)
 #outII_emd_g_boot
 
 # Illustrate bootlines
@@ -288,9 +289,9 @@ year3_r <- lm(cheliped ~ carapace*year, data = red)
 summary(year3_r)
 
 # does year affect eaten?
-ggplot(green) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
-year4 <- lm(proportion_eaten ~ density + cheliped*year, data = green)
-summary(year4)
+ggplot(red) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
+year4_r <- lm(proportion_eaten ~ density + cheliped*year, data = red)
+summary(year4_r)
 
 #cheli x cara graph
 ggplot(red) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
