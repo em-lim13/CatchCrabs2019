@@ -362,6 +362,7 @@ outIII_r_boot <- frair_boot(outIII_r, start = NULL, strata=red[,6], nboot=2000,
 
 # is the asymptote ok
 confint(outIII_r_boot)
+outIII_r_boot
 
 # Illustrate bootlines
 plot(outIII_r_boot, xlim=c(0,70), ylim = c(0, 40), type='n', main='All bootstrapped lines')
@@ -425,6 +426,7 @@ ggplot(data = bootdisttest)+
   geom_histogram(aes(x = red), alpha = 0.3, fill = 'red', colour = 'black', binwidth = 2)+
   labs(x = 'Expected oysters eaten with 64 starting density')
 
+download.packages("fBasics")
 library(fBasics)
 # Testing if there is a difference between the two asymptotes with kolmogorov-smirnov and t.tests
 ks2Test(bootdisttest$green, bootdisttest$red)
@@ -480,7 +482,7 @@ redframe$a_lw <- CI_red[['b']]$stud$lower * redframe$density^1.939
 # Illustrate bootpolys
 plot(outIII_r_boot, xlim=c(0, 65), ylim = c(0, 60), type='n', xlab = expression(paste(italic('Crassostrea gigas'), ' Density')), ylab = expression(paste('Number of ', italic('Crassostrea gigas'),' Consumed')))
 drawpoly(x = 0:64, 
-         upper = 0:64 - lambertW0(redboota_up * CI_red[['h']]$stud$lower * 0:64 * exp(-redboota_up * (1 - CI_red[['h']]$stud$lower * 0:64)))/(redboota_up * CI_red[['h']]$stud$lower),
+         upper = 0:64 - lambertW0(CI_red * CI_red[['h']]$stud$lower * 0:64 * exp(-CI_red * (1 - CI_red[['h']]$stud$lower * 0:64)))/(CI_red * CI_red[['h']]$stud$lower),
          lower = 0:64 - lambertW0(redboota_lw * CI_red[['h']]$stud$upper * 0:64 * exp(-redboota_lw * (1 - CI_red[['h']]$stud$upper * 0:64)))/(redboota_lw * CI_red[['h']]$stud$upper),
          border = NA, col=hsv(0/6, 0.7, 0, alpha = 0.4))
 points(outIII_r_boot, pch=19, col=hsv(0/6, 0.7, 0, alpha = 0.5))
