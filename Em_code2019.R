@@ -168,6 +168,7 @@ plot(resid(cara) ~ factor(oysters$tank))
 
 # Green functional response ---------------------------------
 green <- filter(oysters, species == "green")
+green <- green[-c(20),] 
 str(green)
 
 # Make sure 2018 and 2019 are the same
@@ -271,6 +272,8 @@ summary(green_asymp)
 
 # Red functional response ---------------------------------
 red <- filter(oysters, species == "red")
+red <- red[-c(34),] # 32 no eat
+red <- red[-c(24),] # 64 no eat
 str(red)
 
 # Make sure 2018 and 2019 are the same
@@ -309,7 +312,7 @@ outII_r <- frair_fit(eaten ~ density, data = red, response = 'rogersII',
                      start = list(a = 0.2, h = 0.2), fixed = list(T=1))
 
 outIII_r <- frair_fit(eaten ~ density, data = red, response = 'flexpnr',
-                      start = list(b=0.0029242, q = 1.9391532, h = 0.0312941), fixed = list(T=1))
+                      start = list(b=0.0029242, h = 0.0312941), fixed = list(T=1, q = 1.9391532))
 
 outIII_r_2 <- frair_fit(eaten ~ density, data = red, response = 'hassIIInr',
                         start = list(b=0.0029242, c = 1.9391532, h = 0.0312941), fixed = list(T=1))
