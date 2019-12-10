@@ -426,7 +426,6 @@ ggplot(data = bootdisttest)+
   geom_histogram(aes(x = red), alpha = 0.3, fill = 'red', colour = 'black', binwidth = 2)+
   labs(x = 'Expected oysters eaten with 64 starting density')
 
-download.packages("fBasics")
 library(fBasics)
 # Testing if there is a difference between the two asymptotes with kolmogorov-smirnov and t.tests
 ks2Test(bootdisttest$green, bootdisttest$red)
