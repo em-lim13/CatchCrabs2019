@@ -55,18 +55,17 @@ qqline(resid(dry_model))
 # Effluent exclusion graph ---------------------------------
 
 # Colour
-### LEGEND SAYS TREATMET FOR SOME REASON KILL ME
 ggplot(data = feed_rate, aes(x = carapace, y = dry_consumed, colour = treatment, 
-                             shape = treatment, linetype = treatment)) + 
+  shape = treatment, linetype = treatment)) + 
   geom_point(aes(shape = treatment, colour = treatment), size = 2.9) +  theme_classic() +
   geom_smooth(method = lm, size = 1.5, aes(lty = treatment, colour = treatment)) +
-  scale_color_manual(values = c("blue", "red"), name = "Treatmet", labels = c("Control", "Effluent")) +
+  scale_color_manual(values = c("blue", "red"), name = "Treatment", labels = c("Control", "Effluent")) +
   xlab("Carapace Width (mm)") + ylab("Feeding rate (grams/hour)") +
   theme(axis.text=element_text(colour="black", face = "plain",
                                size = 14), text=element_text(colour="black", size=15, face = "bold")) +
   labs(lty = "Treatment", shape = "Treatment") +
-  scale_linetype_discrete(name = "Treatmet", labels = c("Control", "Effluent")) +
-  scale_shape_discrete(name = "Treatmet", labels = c("Control", "Effluent")) +
+  scale_linetype_discrete(name = "Treatment", labels = c("Control", "Effluent")) +
+  scale_shape_discrete(name = "Treatment", labels = c("Control", "Effluent")) +
   theme(legend.position = c(.15, .85), legend.box.background = element_rect(colour = "black"), 
   legend.background = element_blank())
 
@@ -78,8 +77,8 @@ ggplot(data = feed_rate, aes(x = carapace, y = dry_consumed)) +
   theme(axis.text=element_text(colour="black", 
                                size=13), text=element_text(colour="black", size=13)) +
   labs(lty = "Treatment", shape = "Treatment") +
-  scale_linetype_discrete(name = "Treatmet", labels = c("Control", "Effluent")) +
-  scale_shape_discrete(name = "Treatmet", labels = c("Control", "Effluent"))
+  scale_linetype_discrete(name = "Treatment", labels = c("Control", "Effluent")) +
+  scale_shape_discrete(name = "Treatment", labels = c("Control", "Effluent"))
 
 # Flow rate calculations ---------------------------------
 flow <- read.csv("flow_rate.csv")
