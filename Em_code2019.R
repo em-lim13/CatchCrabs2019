@@ -105,71 +105,12 @@ oysters$time <- as.factor(oysters$time) #fix variable
 oysters$year <- as.factor(oysters$year)
 
 
-# Take a quick look at the data
-ggplot(data = oysters) + geom_jitter(aes(x = density, y = eaten, colour = species)) +
-  scale_color_manual(values=c("green", "red")) + geom_smooth(method = lm, aes(x = density, y = eaten, colour = species))
-
-ggplot(data = oysters) + geom_jitter(aes(x = cheliped, y = eaten, colour = species))
-
-# GLM model ---------------------------------
-
-#turn data into a matrix of successes and failures
-success <- matrix(oysters$eaten, ncol = 1)
-failures <- matrix(oysters$alive, ncol = 1)
-oystmat <- cbind(success, failures)
-
-###### Which Link is Best???
-logit <- glm(oystmat ~ density + cheliped + species, data = oysters, 
-             family = binomial(link = logit))
-probit <- glm(oystmat ~ density + cheliped + species, data = oysters, 
-              family = binomial(link = probit))
-cauchit <- glm(oystmat ~ density + cheliped + species, data = oysters, 
-               family = binomial(link = cauchit))
-cloglog <- glm(oystmat ~ density + cheliped + species, data = oysters, 
-               family = binomial(link = cloglog))
-AIC(logit, probit, cauchit, cloglog)
-#### We chose logit because it is the simplest and only has a slightly higher AIC than the alternatives
-
-### which model is best ????
-full <- glm(oystmat ~ density + cheliped + species, data = oysters, 
-            family = binomial(link = logit))
-den_che <- glm(oystmat ~ density + cheliped, data = oysters, 
-               family = binomial(link = logit))
-den_sp <- glm(oystmat ~ density + species, data = oysters, 
-              family = binomial(link = logit))
-den <- glm(oystmat ~ density, data = oysters, 
-           family = binomial(link = logit))
-int <- glm(oystmat ~ 1, data = oysters, 
-           family = binomial(link = logit))
-cara <-  glm(oystmat ~ density + carapace + species, data = oysters, 
-             family = binomial(link = logit))
-AIC(full, den_che, den_sp, den, int, cara)
-
-### The best model is the one that includes density, carapace and species (cara)
-
-# summary of all models
-summary(full)
-summary(den_che)
-summary(den_sp)
-summary(den)
-summary(int)
-summary(cara)
-
-
-par(mfrow = c(2,2))
-
-plot(cara)
-qqplot(resid(cara))
-hist(resid(cara))
-shapiro.test(resid(cara)) 
-
-par(mfrow = c(1,1))
-plot(resid(cara) ~ factor(oysters$tank))
-
 # Green functional response ---------------------------------
 green <- filter(oysters, species == "green")
 green <- green[-c(20),] 
 str(green)
+max(green$carapace)
+min(green$carapace)
 
 # Make sure 2018 and 2019 are the same
 #cheliped aren't signif diff
@@ -232,12 +173,7 @@ abline(h = 0, lty = 'dotted')
 summary(outII_g$fit)
 summary(outI_g$fit)
 # Compare models using AIC
-AIC(outI_g$fit,outII_g$fit)
-
-
-####  OLD BOOTSTRAP
-#set.seed(98765)
-#outII_g_boot <- frair_boot(outII_g, start = NULL, strata=NULL, nboot=2000, para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
+AIC(outI_g$fit,outII_g$fit) #type II is for sure better
 
 
 # NEW bootstrap
@@ -245,11 +181,9 @@ set.seed(309331)
 outII_g_boot <- frair_boot(outII_g, start = NULL, strata=green[,6], nboot=2000,
                            para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
 
-#outII_emd_g_boot <- frair_boot(emdII_g, start = NULL, strata=green[,6], nboot=2000, para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
-
 outII_g_boot
 confint(outII_g_boot)
-#outII_emd_g_boot
+
 
 # Illustrate bootlines
 plot(outII_g_boot, xlim=c(0,70), ylim = c(0, 40), type='n', main='All bootstrapped lines')
@@ -275,6 +209,8 @@ red <- filter(oysters, species == "red")
 red <- red[-c(34),] # 32 no eat
 red <- red[-c(24),] # 64 no eat
 str(red)
+max(red$carapace)
+min(red$carapace)
 
 # Make sure 2018 and 2019 are the same
 #cheliped aren't signif diff
@@ -511,3 +447,59 @@ plot(cheliped$density_per_cm_round[cheliped$species == 'green'], cheliped$eaten_
      xlab = 'Initial prey density', ylab = 'Number of prey eaten per cm cheliped height')
 points(cheliped$density_per_cm_round[cheliped$species == 'red'], cheliped$eaten_per_cm[cheliped$species == 'red'], pch = 17, col = 'firebrick')
 legend('topleft', col = c('forestgreen', 'firebrick'), pch = c(19, 17), legend = c('Carcinus maenas', 'Cancer productus'))
+
+
+# GLM model (not in final MS) ---------------------------------
+
+#turn data into a matrix of successes and failures
+success <- matrix(oysters$eaten, ncol = 1)
+failures <- matrix(oysters$alive, ncol = 1)
+oystmat <- cbind(success, failures)
+
+###### Which Link is Best???
+logit <- glm(oystmat ~ density + cheliped + species, data = oysters, 
+             family = binomial(link = logit))
+probit <- glm(oystmat ~ density + cheliped + species, data = oysters, 
+              family = binomial(link = probit))
+cauchit <- glm(oystmat ~ density + cheliped + species, data = oysters, 
+               family = binomial(link = cauchit))
+cloglog <- glm(oystmat ~ density + cheliped + species, data = oysters, 
+               family = binomial(link = cloglog))
+AIC(logit, probit, cauchit, cloglog)
+#### We chose logit because it is the simplest and only has a slightly higher AIC than the alternatives
+
+### which model is best ????
+full <- glm(oystmat ~ density + cheliped + species, data = oysters, 
+            family = binomial(link = logit))
+den_che <- glm(oystmat ~ density + cheliped, data = oysters, 
+               family = binomial(link = logit))
+den_sp <- glm(oystmat ~ density + species, data = oysters, 
+              family = binomial(link = logit))
+den <- glm(oystmat ~ density, data = oysters, 
+           family = binomial(link = logit))
+int <- glm(oystmat ~ 1, data = oysters, 
+           family = binomial(link = logit))
+cara <-  glm(oystmat ~ density + carapace + species, data = oysters, 
+             family = binomial(link = logit))
+AIC(full, den_che, den_sp, den, int, cara)
+
+### The best model is the one that includes density, carapace and species (cara)
+
+# summary of all models
+summary(full)
+summary(den_che)
+summary(den_sp)
+summary(den)
+summary(int)
+summary(cara)
+
+
+par(mfrow = c(2,2))
+
+plot(cara)
+qqplot(resid(cara))
+hist(resid(cara))
+shapiro.test(resid(cara)) 
+
+par(mfrow = c(1,1))
+plot(resid(cara) ~ factor(oysters$tank))
