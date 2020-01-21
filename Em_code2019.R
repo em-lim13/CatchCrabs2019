@@ -55,6 +55,7 @@ qqline(resid(dry_model))
 # Effluent exclusion graph ---------------------------------
 
 # Colour
+# why isn't this updating??
 ggplot(data = feed_rate, aes(x = carapace, y = dry_consumed, colour = treatment, 
   shape = treatment, linetype = treatment)) + 
   geom_point(aes(shape = treatment, colour = treatment), size = 2.9) +  theme_classic() +
