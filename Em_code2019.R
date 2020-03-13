@@ -343,6 +343,27 @@ legend(x = "topleft", legend = c("Green Crabs", "Red Rock Crabs"),
        col = c(hsv(2.5/6,0.9, 0.5, alpha= 1), c(hsv(6/6,0.9, 0.5))), 
        lty = c(2, 1), cex = 1.3, pch = c(20, 17))
 
+
+# BW graph ------------
+
+plot(outIII_r_boot, xlim=c(0, 65), ylim = c(0, 40), type='n',
+     xlab = "Oyster Density",
+     ylab="Number of Oysters Consumed", 
+     cex.lab = 1.1,
+     font.lab = 2,
+     cex.axis = 1.2,
+     cex.main = 1.5)
+lines(outII_g_boot, lwd = 2, all_lines=FALSE, col=hsv(1, 1, 0, alpha= 1), lty = 2)
+lines(outIII_r_boot, lwd = 2, all_lines=FALSE, col=hsv(1, 1, 0, alpha = 1), lty = 1)
+drawpoly(outIII_r_boot, border = NA, col=hsv(1, 1, 0, alpha = 0.6))
+drawpoly(outII_g_boot, border = NA, col=hsv(1, 1, 0, alpha= 0.3))
+points(outIII_r_boot, pch=17, col=hsv(1, 1, 0, alpha = 0.7), cex = 0.9)
+points(outII_g_boot, pch=20,  col=hsv(1, 1, 0, alpha= 0.7), cex = 0.9)
+legend(x = "topleft", text.font=c(3,3), legend = c("Cancer productus", "Carcinus maenas"), 
+       col = c(hsv(1, 1, 0, alpha= 1), c(hsv(1, 1, 0))), 
+       fill = c(col=hsv(1, 1, 0, alpha = 0.6), col=hsv(1, 1, 0, alpha = 0.3)),
+       lty = c(1, 2), cex = 1, pch = c(17, 20))
+
 # Comparing the distributions of the asymptotes of CP to CM ---------------
 green.densities <- c(64)
 
