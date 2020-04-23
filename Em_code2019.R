@@ -8,7 +8,6 @@ library(lamW)
 library(LambertW)
 library(frair)
 
-Hi Rebecca, how are you
 # Effluent exclusion experiment ---------------------------------
 
 # Import data
@@ -55,7 +54,6 @@ qqline(resid(dry_model))
 # Effluent exclusion graph ---------------------------------
 
 # Colour
-# why isn't this updating??
 ggplot(data = feed_rate, aes(x = carapace, y = dry_consumed, colour = treatment, 
   shape = treatment, linetype = treatment)) + 
   geom_point(aes(shape = treatment, colour = treatment), size = 2.9) +  theme_classic() +
@@ -74,12 +72,16 @@ ggplot(data = feed_rate, aes(x = carapace, y = dry_consumed, colour = treatment,
 ggplot(data = feed_rate, aes(x = carapace, y = dry_consumed)) + 
   geom_point(aes(shape = treatment), size = 2) +  theme_classic() +
   geom_smooth(method = lm, colour = "black", aes(lty = treatment)) +
-  xlab("Carapace Width (mm)") + ylab("Feeding rate (grams/hour)") +
-  theme(axis.text=element_text(colour="black", 
-                               size=13), text=element_text(colour="black", size=13)) +
+  xlab("Carapace width (mm)") + ylab("Feeding rate (grams/hour)") +
+  theme(axis.text=element_text(colour="black", size=14),
+     text=element_text(colour="black", size=14), 
+     panel.border = element_rect(colour = "black", fill = NA, size = 0.7), 
+     legend.position = c(0.11, 0.87), 
+     legend.background = element_rect(color = "black", linetype = "solid")) +
   labs(lty = "Treatment", shape = "Treatment") +
   scale_linetype_discrete(name = "Treatment", labels = c("Control", "Effluent")) +
   scale_shape_discrete(name = "Treatment", labels = c("Control", "Effluent"))
+
 
 # Flow rate calculations ---------------------------------
 flow <- read.csv("flow_rate.csv")
@@ -363,6 +365,8 @@ legend(x = "topleft", text.font=c(3,3), legend = c("Cancer productus", "Carcinus
        col = c(hsv(1, 1, 0, alpha= 1), c(hsv(1, 1, 0))), 
        fill = c(col=hsv(1, 1, 0, alpha = 0.6), col=hsv(1, 1, 0, alpha = 0.3)),
        lty = c(1, 2), cex = 1, pch = c(17, 20))
+
+
 
 # Comparing the distributions of the asymptotes of CP to CM ---------------
 green.densities <- c(64)
