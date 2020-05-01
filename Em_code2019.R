@@ -17,15 +17,13 @@ feed_rate <- read.csv("feed_rate.csv")
 feed_rate$crab_id<- as.factor(feed_rate$crab_id)
 feed_rate$salmon_id<- as.factor(feed_rate$salmon_id)
 
-# make the -'s 0
+# make the negative feeding rates, which are biologically impossible, 0
 for (i in 1:length(feed_rate$crab_id)){
   if (feed_rate$dry_consumed[i] < 0) { feed_rate$dry_consumed[i] <- 0}} 
 
 # Log transformation
 feed_rate$log_dry <- log(feed_rate$dry_consumed + 1)
 
-#Double check everything worked
-str(feed_rate)
 
 
 ####### construct models
@@ -98,53 +96,23 @@ sd(flow$flow_rate_ml_s[flow$tank_size=="large"])
 
 
 # Functional response experiment ---------------------------------
-oysters <- read.csv("functional_response.csv") #data file with green and red crab data for functional response
+oysters <- read.csv("functional_response.csv") #data file with 2018 green and red crab data for functional response
 oysters2 <- read.csv("functional_response_2019.csv") #data file with 2019 data
 oysters <- add_column(oysters, year = 2018) #add year column to 2018 data
 oysters <- bind_rows(oysters, oysters2) #bind the two data frames
 oysters$species <- as.factor(oysters$species) #fix variables
 oysters$time <- as.factor(oysters$time) #fix variable
-oysters$year <- as.factor(oysters$year)
+oysters$year <- as.factor(oysters$year) #fix variables
 
 
 # Green functional response ---------------------------------
 green <- filter(oysters, species == "green")
-green <- green[-c(20),] 
-str(green)
-max(green$carapace)
-min(green$carapace)
-
-# Make sure 2018 and 2019 are the same
-#cheliped aren't signif diff
-years <- lm(cheliped ~ year, data = green)
-summary(years)
-ggplot(green) + geom_boxplot(aes(x = year, y = cheliped))
-
-# but 2019 crabs were bigger
-years2 <- lm(carapace ~ year, data = green)
-anova(years2)
-summary(years2)
-ggplot(green) + geom_boxplot(aes(x = year, y = carapace))
-
-year3 <- lm(cheliped ~ carapace*year, data = green)
-summary(year3)
-
-# does year affect eaten?
-ggplot(green) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
-year4 <- lm(proportion_eaten ~ density + cheliped*year, data = green)
-summary(year4)
-
-#cheli x cara graph
-ggplot(green) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
-  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
-
+green <- green[-c(20),]  #remove crab that moulted
 
 # Test for type II
 frair_test(eaten ~ density, data = green)
 
 ### Frair fit
-frair_responses()
-
 outII_g <- frair_fit(eaten ~ density, data = green, response = 'rogersII',
                      start = list(a = 0.2, h = 0.2), fixed = list(T=1))
 
@@ -174,18 +142,18 @@ abline(h = 0, lty = 'dotted')
 # Have a look at original fits returned by mle2 (*highly* recommended)
 summary(outII_g$fit)
 summary(outI_g$fit)
+
 # Compare models using AIC
 AIC(outI_g$fit,outII_g$fit) #type II is for sure better
 
 
-# NEW bootstrap
+# Bootstrap
 set.seed(309331)
 outII_g_boot <- frair_boot(outII_g, start = NULL, strata=green[,6], nboot=2000,
                            para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
 
 outII_g_boot
 confint(outII_g_boot)
-
 
 # Illustrate bootlines
 plot(outII_g_boot, xlim=c(0,70), ylim = c(0, 40), type='n', main='All bootstrapped lines')
@@ -205,47 +173,15 @@ green_asymp <- nls(eaten ~ SSasymp(density, Asym, R0, lrc),
 summary(green_asymp)
 
 
-
 # Red functional response ---------------------------------
 red <- filter(oysters, species == "red")
-red <- red[-c(34),] # 32 no eat
-red <- red[-c(24),] # 64 no eat
-str(red)
-max(red$carapace)
-min(red$carapace)
-
-# Make sure 2018 and 2019 are the same
-#cheliped aren't signif diff
-years_r <- lm(cheliped ~ year, data = red)
-summary(years_r)
-ggplot(red) + geom_boxplot(aes(x = year, y = cheliped))
-
-# but 2019 crabs were bigger
-years2_r <- lm(carapace ~ year, data = red)
-anova(years2_r)
-summary(years2_r)
-ggplot(red) + geom_boxplot(aes(x = year, y = carapace))
-
-year3_r <- lm(cheliped ~ carapace*year, data = red)
-summary(year3_r)
-
-# does year affect eaten?
-ggplot(red) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
-year4_r <- lm(proportion_eaten ~ density + cheliped*year, data = red)
-summary(year4_r)
-
-#cheli x cara graph
-ggplot(red) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
-  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
-
-
+red <- red[-c(34),] # remove extreme lethargy/moult colouration
+red <- red[-c(24),] # remove extreme lethargy/moult colouration
 
 # Test for type II or III
 frair_test(eaten ~ density, data = red) 
 
 ### Frair fit
-frair_responses()
-
 outII_r <- frair_fit(eaten ~ density, data = red, response = 'rogersII',
                      start = list(a = 0.2, h = 0.2), fixed = list(T=1))
 
@@ -265,7 +201,6 @@ lines(outI_r, lty=3)
 lines(outII_r, lty = 4)
 lines(outIII_r_2, lty = 5)
 
-
 #### calculate predicted values?
 b <- outIII_r$coefficients[1] # Get coeffs 
 q <- outIII_r$coefficients[2]
@@ -281,7 +216,6 @@ fits$actual <- red$eaten
 fits$resid <- fits$actual - fits$Ne
 plot(y = fits$resid, x = fits$Ne)
 abline(h = 0, lty = 'dotted')
-##
 
 
 # Have a look at original fits returned by mle2 (*highly* recommended)
@@ -289,14 +223,13 @@ summary(outIII_r$fit)
 summary(outII_r$fit)
 summary(outI_r$fit)
 # Compare models using AIC
-AIC(outI_r$fit,outII_r$fit, outIII_r$fit, outIII_r_2$fit)
+AIC(outI_r$fit,outII_r$fit, outIII_r$fit, outIII_r_2$fit) #type III is best
 
 
 #### BOOTSTRAP 
 set.seed(604250)
 outIII_r_boot <- frair_boot(outIII_r, start = NULL, strata=red[,6], nboot=2000,
                             para=TRUE, ncores=NaN, WARN.ONLY=FALSE)
-
 
 # is the asymptote ok
 confint(outIII_r_boot)
@@ -327,7 +260,6 @@ summary(red_asymp)
 
 
 # Functional response graph ---------------------------------
-
 plot(outIII_r_boot, xlim=c(0, 65), ylim = c(0, 40), type='n',
      xlab = "Initial Oyster Density",
      ylab="Oysters Consumed", 
@@ -394,8 +326,7 @@ t.test(bootdisttest$green, bootdisttest$red)
 
 # Everything I've tried so far results in different means of the two
 # species/different distributions that the two species are drawn from. t-test
-# suggests difference in mean maximum consumptive rate of ~7-9. I don't think I
-# can argue a non-statistically-significant difference without more data
+# suggests difference in mean maximum consumptive rate of ~7-9.
 
 # This is just a test of how the effect of sample size on type 1 error when bootstrapping
 simfun <- function(n=6) {
@@ -429,7 +360,6 @@ rowMeans(out)
 
 
 # Bootstrapping for studentized and BCa intervals -------------------------
-
 CI_green <- confint(outII_g_boot)
 CI_red <- confint(outIII_r_boot)
 redframe <- data.frame(density = 0:64)
@@ -528,3 +458,95 @@ shapiro.test(resid(cara))
 
 par(mfrow = c(1,1))
 plot(resid(cara) ~ factor(oysters$tank))
+
+# Supplement: Test year effect --------------------------------------------------------
+
+#Green crabs
+#cheliped aren't signif diff
+years <- lm(cheliped ~ year, data = green)
+summary(years)
+ggplot(green) + geom_boxplot(aes(x = year, y = cheliped))
+
+# but 2019 crabs were bigger
+years2 <- lm(carapace ~ year, data = green)
+summary(years2)
+ggplot(green) + geom_boxplot(aes(x = year, y = carapace))
+
+# does year affect eaten? N!
+ggplot(green) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
+year3 <- lm(proportion_eaten ~ density + cheliped*year, data = green)
+summary(year3)
+
+#cheli x cara graph
+ggplot(green) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
+  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
+
+# Red rock crabs
+#cheliped are smaller 2019
+years_r <- lm(cheliped ~ year, data = red)
+summary(years_r)
+ggplot(red) + geom_boxplot(aes(x = year, y = cheliped))
+
+# and 2019 crabs were smaller
+years2_r <- lm(carapace ~ year, data = red)
+summary(years2_r)
+ggplot(red) + geom_boxplot(aes(x = year, y = carapace))
+
+# does year affect eaten? No
+ggplot(red) + geom_jitter(aes(x = density, y = proportion_eaten, colour = year))
+year3_r <- lm(proportion_eaten ~ density + cheliped*year, data = red)
+summary(year3_r)
+
+#cheli x cara graph
+ggplot(red) + geom_point(aes(x = carapace, y = cheliped, colour = year)) + 
+  geom_smooth(aes(x = carapace, y = cheliped, colour = year), method = lm)
+
+
+# wilcox test
+green.year <- green[green$density == 64,]
+green.year$year <- as.factor(green.year$year)
+green.year$proportion_eatenlog <- log(green.year$proportion_eaten)
+plot(x = green.year$year, y = green.year$proportion_eaten)
+
+green.year.lm <- lm(proportion_eaten ~ year, data = green.year)
+summary(green.year.lm)
+plot(green.year.lm, which = c(1,2,4))
+
+green.year.nls <- glm(proportion_eaten ~ year, data = green.year[green.year$proportion_eaten > 0,], family = Gamma)
+summary(green.year.nls)
+plot(green.year.nls)
+
+green.year$species <- 'C. maenas'
+
+wilcox.test(formula = green.year$proportion_eaten ~ green.year$year)
+
+red.year <- red[red$density == 64,]
+red.year$year <- as.factor(red.year$year)
+red.year$proportion_eatenlog <- log(red.year$proportion_eaten)
+plot(x = red.year$year, y = red.year$proportion_eaten)
+red.year.lm <- lm(proportion_eaten ~ year, data = red.year)
+summary(red.year.lm)
+plot(red.year.lm, which = c(1,2,4))
+
+red.year.nls <- glm(proportion_eaten ~ year, data = red.year[red.year$proportion_eaten > 0,], family = Gamma)
+summary(red.year.nls)
+plot(red.year.nls)
+
+wilcox.test(formula = red.year$proportion_eaten ~ red.year$year)
+
+red.year$species <- 'C. productus'
+
+years <- full_join(green.year, red.year)
+
+# Supplement plot
+ggplot(data = years)+
+  geom_boxplot(aes(x = year, y = proportion_eaten, fill = year)) +
+  scale_fill_manual(values = c('grey65', 'grey45'))+
+  facet_grid(~species)+
+  theme_classic()+
+  labs(x = 'Year',
+       y = 'Proportion of 64 oysters consumed')+
+  guides(fill = FALSE)+
+  theme(axis.text = element_text(size = 14, family = 'Times New Roman'),
+        axis.title = element_text(size = 14, face = 'bold', family = 'Times New Roman'),
+        strip.text = element_text(size = 14, face = 'bold', family = 'Times New Roman'))
