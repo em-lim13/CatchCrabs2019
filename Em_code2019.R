@@ -14,16 +14,12 @@ library(frair)
 feed_rate <- read.csv("feed_rate.csv")
 
 # Clean up data frame a bit
-feed_rate$crab_id<- as.factor(feed_rate$crab_id)
-feed_rate$salmon_id<- as.factor(feed_rate$salmon_id)
-
-# make the negative feeding rates, which are biologically impossible, 0
-for (i in 1:length(feed_rate$crab_id)){
-  if (feed_rate$dry_consumed[i] < 0) { feed_rate$dry_consumed[i] <- 0}} 
-
-# Log transformation
-feed_rate$log_dry <- log(feed_rate$dry_consumed + 1)
-
+feed_rate <- feed_rate %>% mutate(
+  crab_id = as.factor(crab_id),
+  salmon_id = as.factor(salmon_id), 
+  dry_consumed = replace(dry_consumed, dry_consumed < 0, 0),
+  log_dry = log(dry_consumed + 1)
+)
 
 
 ####### construct models
