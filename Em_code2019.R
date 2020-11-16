@@ -256,6 +256,7 @@ summary(red_asymp)
 
 
 # Functional response graph ---------------------------------
+par(bg = 'white', fg = 'black')
 plot(outIII_r_boot, xlim=c(0, 65), ylim = c(0, 40), type='n',
      xlab = "Initial Oyster Density",
      ylab="Oysters Consumed", 
@@ -273,6 +274,28 @@ legend(x = "topleft", legend = c("Green Crabs", "Red Rock Crabs"),
        col = c(hsv(2.5/6,0.9, 0.5, alpha= 1), c(hsv(6/6,0.9, 0.5))), 
        lty = c(2, 1), cex = 1.3, pch = c(20, 17))
 
+# Black background graph ------
+par(bg = 'black', fg = 'white')
+plot(outIII_r_boot, xlim=c(0, 65), ylim = c(0, 40), type='n',
+     xlab = "Initial Oyster Density",
+     ylab="Oysters Consumed", 
+     cex.lab = 1.5,
+     font.lab = 2,
+     cex.axis = 1.2,
+     cex.main = 1.5,
+     col.axis = "white",
+     col.clab = "white")
+lines(outII_g_boot, lwd = 3, all_lines=FALSE, col=hsv(2.5/6,0.9, 0.5, alpha= 1), lty = 2)
+lines(outIII_r_boot, lwd = 3, all_lines=FALSE, col=hsv(6/6,0.9, 0.5, alpha = 1), lty = 1)
+drawpoly(outIII_r_boot, border = NA, col=hsv(6/6,0.6, 0.8, alpha = 0.4))
+drawpoly(outII_g_boot, border = NA, col=hsv(2.5/6,0.6, 0.8, alpha= 0.4))
+points(outIII_r_boot, pch=17, col=hsv(6/6,0.8, 0.5), cex = 1.4)
+points(outII_g_boot, pch=20,  col=hsv(2.5/6,0.8, 0.5, alpha= 1), cex = 1.4)
+legend(x = "topleft", legend = c("Green Crabs", "Red Rock Crabs"), 
+       col = c(hsv(2.5/6,0.9, 0.5, alpha= 1), c(hsv(6/6,0.9, 0.5))), 
+       lty = c(2, 1), cex = 1.3, pch = c(20, 17))
+ggsave("../Figures/black_FR_plot.png", device = "png",
+       height = 9, width = 16, dpi = 400)
 
 # BW graph ------------
 
